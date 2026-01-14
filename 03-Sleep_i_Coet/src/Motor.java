@@ -4,8 +4,13 @@ public class Motor extends Thread {
     private int potenciaActual = 0;
     private int potenciaObjectiu = 0;
 
+    private boolean started = false;
+    private boolean imprèsFerRes = false;
+
     public synchronized void setPotencia(int p) {
         this.potenciaObjectiu = p;
+        this.started = true;
+        this.imprèsFerRes = false;
     }
 
     public Motor(String nom) {
@@ -24,19 +29,20 @@ public class Motor extends Thread {
                 potenciaActual--;
                 System.out.println(getName() + ": Decre. Objectiu: " + potenciaObjectiu + " Actual: " + potenciaActual);
             } else {
-                System.out.println(getName() + ": FerRes Objectiu: " + potenciaObjectiu + " Actual: " + potenciaActual);
-                if (potenciaObjectiu == 0 && potenciaActual != 0) {
+                if (!imprèsFerRes) {
+                    System.out.println(
+                            getName() + ": FerRes Objectiu: " + potenciaObjectiu + " Actual: " + potenciaActual);
+                    imprèsFerRes = true;
+                }
+                if (potenciaObjectiu == 0 && started) {
                     return;
                 }
             }
             try {
-                Thread.sleep(100);
+                Thread.sleep(random.nextInt(1001) + 1000);
             } catch (InterruptedException e) {
                 return;
             }
-            continue;
-
         }
     }
-
 }
