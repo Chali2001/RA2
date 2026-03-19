@@ -2,75 +2,78 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Estanc extends Thread{
+public class Estanc extends Thread {
     private List<Tabac> tabac = new ArrayList<>();
     private List<Paper> paper = new ArrayList<>();
     private List<Llumi> llumi = new ArrayList<>();
     private Random random = new Random();
     private boolean estancObert;
-    
-    public Estanc(List<Tabac> tabac, List<Paper> paper, List<Llumi> llumi) {
-        this.tabac = tabac;
-        this.paper = paper;
-        this.llumi = llumi;
+
+    public Estanc(Tabac tabacInicial, Paper paperInicial, Llumi llumiInicial) {
+        this.estancObert = true;
     }
 
     public synchronized void nouSubministrament() {
         int produeix = random.nextInt(3);
         if (produeix == 0) {
             addTabac();
+            System.out.println("Afegint tabac");
         } else if (produeix == 1) {
             addLlumi();
-        }else {
+            System.out.println("Afegint llumí");
+        } else {
             addPaper();
+            System.out.println("Afegint paper");
         }
         notifyAll();
     }
 
-    public synchronized void addTabac(){
-       tabac.add(new Tabac());
+    public void addTabac() {
+        tabac.add(new Tabac());
     }
 
-    public synchronized void addLlumi(){
+    public void addLlumi() {
         llumi.add(new Llumi());
     }
 
-    public synchronized void addPaper(){
+    public void addPaper() {
         paper.add(new Paper());
     }
 
-    public synchronized Tabac venTabac(){
-        if(!tabac.isEmpty()){
+    public synchronized Tabac venTabac() {
+        if (!tabac.isEmpty()) {
             return tabac.remove(0);
         }
         return null;
     }
 
-    public synchronized Llumi venLlumi(){
-        if(!llumi.isEmpty()){
+    public synchronized Llumi venLlumi() {
+        if (!llumi.isEmpty()) {
             return llumi.remove(0);
         }
         return null;
-    }  
+    }
 
-    public synchronized Paper venPaper(){
-        if(!paper.isEmpty()){
+    public synchronized Paper venPaper() {
+        if (!paper.isEmpty()) {
             return paper.remove(0);
         }
         return null;
     }
 
-    public synchronized void tancaEstanc(){
+    public synchronized void tancaEstanc() {
         estancObert = false;
         notifyAll();
+        System.out.println("Estanc tancat");
     }
 
-    public synchronized boolean esObert(){
-        return estancObert = true;
+    public synchronized boolean esObert() {
+        return estancObert;
     }
 
     @Override
-    public void run(){
+    public void run() {
+        System.out.println("Estanc obert");
         while (estancObert) {
             nouSubministrament();
             try {
@@ -78,7 +81,6 @@ public class Estanc extends Thread{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 }
